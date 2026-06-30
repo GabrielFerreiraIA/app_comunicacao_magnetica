@@ -1,0 +1,313 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================================
+   COMUNICAÇÃO MAGNÉTICA — tema "Dark Premium" (roxo profundo + dourado)
+   Marca Hélia · paleta luxuosa, mobile-first, app-like.
+   ============================================================================ */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-heading: var(--font-display);
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* Tokens da marca (uso direto nas telas) */
+  --color-gold: var(--gold);
+  --color-gold-bright: var(--gold-bright);
+  --color-gold-champagne: var(--gold-champagne);
+  --color-gold-deep: var(--gold-deep);
+  --color-iris: var(--iris);
+  --color-orchid: var(--orchid);
+  --color-plum: var(--plum);
+  --color-success: var(--success);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+}
+
+:root,
+.dark {
+  --radius: 1rem;
+
+  --background: #fdfcfa; /* off-white/alabastro luxuoso */
+  --foreground: #1c0d2b; /* roxo-escuro profundo */
+
+  --card: #ffffff; /* cartões brancos que contrastam com o fundo */
+  --card-foreground: #1c0d2b;
+  --popover: #ffffff;
+  --popover-foreground: #1c0d2b;
+
+  --primary: #c9a227; /* ouro folha */
+  --primary-foreground: #ffffff;
+
+  --secondary: #f5effd; /* lilás/lavanda muito suave */
+  --secondary-foreground: #4a2574; /* roxo médio nobre */
+
+  --muted: #f7f3fd;
+  --muted-foreground: #7d6995; /* lilás cinzento legível */
+
+  --accent: #5c2d91; /* íris real */
+  --accent-foreground: #ffffff;
+
+  --destructive: #c7556b;
+
+  --border: rgba(74, 37, 116, 0.08); /* borda sutil em tom lilás/íris */
+  --input: rgba(74, 37, 116, 0.06);
+  --ring: #5c2d91;
+
+  /* Tokens de marca */
+  --gold: #c9a227;
+  --gold-bright: #b08a1c; /* ouro mais saturado para legibilidade em fundo claro */
+  --gold-champagne: #ecd37a; /* ouro champagne de contraste */
+  --gold-deep: #6e5314;
+  --iris: #5c2d91;
+  --orchid: #8954c2;
+  --plum: #fdf9ff;
+  --success: #2e8b57;
+
+  color-scheme: light;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    height: 100%;
+  }
+  body {
+    @apply text-foreground;
+    min-height: 100%;
+    background: linear-gradient(135deg, #fdfcfa, #faf5ff, #fbf7f0, #f6eeff, #fdfcfa);
+    background-size: 300% 300%;
+    animation: CM-ambient-drift 20s ease infinite;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ---- Utilitários da marca ------------------------------------------------ */
+
+/* Texto em folha de ouro (gradiente recortado) - ajustado para fundo claro */
+.text-gold {
+  background: linear-gradient(135deg, #b08a1c 0%, #c9a227 50%, #8a6a1c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Fundo dourado sólido (selos, ícones) */
+.bg-gold-gradient {
+  background: linear-gradient(135deg, #ecd37a 0%, #c9a227 55%, #8a6a1c 100%);
+}
+
+/* Título serifado de exibição — a "voz" premium da marca */
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Versalete cerimonial (eyebrow) */
+.eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--secondary-foreground);
+}
+
+/* Filete ornamental dourado */
+.rule-gold {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+/* Esconde scrollbar nos carrosséis horizontais */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ---- Estilos de Alta Fidelidade (UI/UX PRO MAX) -------------------------- */
+
+/* Cartões premium com vidro fosco */
+.glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(74, 37, 116, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(74, 37, 116, 0.04);
+}
+
+.glass-card:hover {
+  border-color: rgba(201, 162, 39, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* Cartões com brilho de borda ativo ou foco */
+.glass-card-glow {
+  position: relative;
+}
+.glass-card-glow::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.15) 0%, transparent 60%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Animações e Shimmers */
+@keyframes CM-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.08), transparent);
+  background-size: 200% 100%;
+  animation: CM-shimmer 2.5s infinite linear;
+}
+
+@keyframes CM-pulse-glow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+.animate-pulse-glow {
+  animation: CM-pulse-glow 3s infinite ease-in-out;
+}
+
+@keyframes CM-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: CM-fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes CM-ambient-drift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes CM-pulse-gold {
+  0%, 100% {
+    transform: scale(0.9);
+    opacity: 0.65;
+    box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.25);
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+    box-shadow: 0 0 8px 3px rgba(201, 162, 39, 0.15);
+  }
+}
+
+.animate-pulse-gold {
+  animation: CM-pulse-gold 2.5s infinite ease-in-out;
+}
+
+/* Sombra premium para tirar aspecto "chapado" em fundo claro */
+.shadow-premium {
+  box-shadow: 
+    0 12px 30px -8px rgba(74, 37, 116, 0.05),
+    0 2px 4px rgba(74, 37, 116, 0.01),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(74, 37, 116, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shadow-premium:hover {
+  box-shadow: 
+    0 20px 38px -6px rgba(74, 37, 116, 0.07),
+    0 1px 6px rgba(201, 162, 39, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  border-color: rgba(201, 162, 39, 0.22);
+}
+
+/* Brilhos dinâmicos específicos para cada pilar (Claro) */
+.pilar-glow-voz {
+  border-color: rgba(107, 63, 160, 0.18);
+  box-shadow: 0 4px 16px rgba(107, 63, 160, 0.03);
+  background: radial-gradient(100% 100% at 0% 0%, rgba(107, 63, 160, 0.06), transparent 70%), rgba(255, 255, 255, 0.85);
+}
+.pilar-glow-arquetipos {
+  border-color: rgba(199, 85, 107, 0.18);
+  box-shadow: 0 4px 16px rgba(199, 85, 107, 0.03);
+  background: radial-gradient(100% 100% at 0% 0%, rgba(199, 85, 107, 0.06), transparent 70%), rgba(255, 255, 255, 0.85);
+}
+.pilar-glow-imagem {
+  border-color: rgba(91, 191, 138, 0.18);
+  box-shadow: 0 4px 16px rgba(91, 191, 138, 0.03);
+  background: radial-gradient(100% 100% at 0% 0%, rgba(91, 191, 138, 0.06), transparent 70%), rgba(255, 255, 255, 0.85);
+}
+.pilar-glow-lideranca {
+  border-color: rgba(201, 162, 39, 0.18);
+  box-shadow: 0 4px 16px rgba(201, 162, 39, 0.03);
+  background: radial-gradient(100% 100% at 0% 0%, rgba(201, 162, 39, 0.06), transparent 70%), rgba(255, 255, 255, 0.85);
+}
+.pilar-glow-carisma {
+  border-color: rgba(176, 138, 28, 0.18);
+  box-shadow: 0 4px 16px rgba(176, 138, 28, 0.03);
+  background: radial-gradient(100% 100% at 0% 0%, rgba(242, 227, 168, 0.1), transparent 70%), rgba(255, 255, 255, 0.85);
+}
+
