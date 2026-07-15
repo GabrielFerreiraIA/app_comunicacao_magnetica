@@ -7,7 +7,9 @@ import { combinationRules, resolveRelations } from "@/lib/content/archetypes";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ColorSwatchChip } from "@/components/color-swatch-chip";
 import { LookMockupPlaceholder } from "@/components/look-mockup-placeholder";
+import { ArchetypePosesGallery } from "@/components/archetype-poses-gallery";
 import { ArchetypeIcon } from "@/components/archetype-icon";
+import { getArchetypePoses } from "@/lib/content/archetype-poses";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 
 function Field({ label, value }: { label: string; value: string }) {
@@ -146,6 +148,7 @@ export function ArchetypeDetail({ archetype: a }: { archetype: Archetype }) {
   const affinities = resolveRelations(a.affinities);
   const tensions = resolveRelations(a.tensions);
   const combo = combinationRules.find((r) => r.archetypeIds.includes(a.id));
+  const poses = getArchetypePoses(a.id);
 
   return (
     <div className="space-y-6 pt-2">
@@ -232,7 +235,11 @@ export function ArchetypeDetail({ archetype: a }: { archetype: Archetype }) {
           </TabsContent>
 
           <TabsContent value="estilo" className="mt-4 space-y-4">
-            <LookMockupPlaceholder label={`Look ${a.name}`} />
+            {poses ? (
+              <ArchetypePosesGallery poses={poses} archetypeName={a.name} />
+            ) : (
+              <LookMockupPlaceholder label={`Look ${a.name}`} />
+            )}
             <div className="space-y-3 rounded-[24px] border border-purple-200/25 bg-card/65 backdrop-blur-md p-5 shadow-xs">
               <Field label="Peças-Chave" value={a.wardrobe.pieces} />
               <Field label="Acessórios & Linhas" value={a.wardrobe.lines} />

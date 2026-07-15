@@ -2,6 +2,116 @@ import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+// ============================================================
+// E-mail de boas-vindas via Resend (resend.com).
+// Disparado apenas em compras aprovadas (status = "active").
+// Se RESEND_API_KEY não estiver configurada, o envio é ignorado
+// silenciosamente — o webhook não falha por causa disso.
+// ============================================================
+
+const APP_URL = "https://app-comunicacao-magnetica.vercel.app";
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? "noreply@resend.dev";
+const FROM_NAME = process.env.RESEND_FROM_NAME ?? "Hélia Gonçalves";
+
+function buildWelcomeEmail(toName: string | null, toEmail: string): string {
+  const firstName = toName ? toName.split(" ")[0] : "aluna";
+  return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seu acesso ao app</title>
+</head>
+<body style="margin:0;padding:0;background:#0B0612;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0612;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" style="max-width:520px;background:#1a0f2e;border-radius:16px;border:1px solid #4A154B;overflow:hidden;">
+
+          <!-- Header roxo -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#4A154B,#2d0a2e);padding:32px 32px 24px;text-align:center;">
+              <p style="margin:0;font-size:13px;color:#C9A227;letter-spacing:3px;text-transform:uppercase;font-weight:600;">Comunicação Magnética</p>
+              <h1 style="margin:12px 0 0;font-size:22px;color:#ffffff;font-weight:700;line-height:1.3;">
+                Seu acesso está liberado ✨
+              </h1>
+            </td>
+          </tr>
+
+          <!-- Corpo -->
+          <tr>
+            <td style="padding:32px;">
+              <p style="margin:0 0 16px;color:#d4b8e0;font-size:15px;line-height:1.6;">
+                Olá, <strong style="color:#ffffff;">${firstName}</strong>!
+              </p>
+              <p style="margin:0 0 16px;color:#d4b8e0;font-size:15px;line-height:1.6;">
+                Sua compra foi confirmada e seu acesso ao app <strong style="color:#C9A227;">Comunicação Magnética</strong> já está liberado.
+              </p>
+              <p style="margin:0 0 8px;color:#d4b8e0;font-size:15px;line-height:1.6;">
+                Para criar sua conta, clique no botão abaixo e escolha <strong style="color:#ffffff;">"Primeiro acesso"</strong>. Use exatamente este e-mail:
+              </p>
+              <!-- chip do e-mail -->
+              <p style="margin:0 0 24px;text-align:center;">
+                <span style="display:inline-block;background:#2d1a4a;border:1px solid #C9A227;border-radius:8px;padding:8px 20px;color:#C9A227;font-size:14px;font-weight:600;letter-spacing:0.5px;">${toEmail}</span>
+              </p>
+
+              <!-- CTA -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding-bottom:28px;">
+                    <a href="${APP_URL}/login" style="display:inline-block;background:linear-gradient(135deg,#C9A227,#a07d1a);color:#0B0612;font-size:15px;font-weight:700;text-decoration:none;padding:14px 36px;border-radius:10px;letter-spacing:0.5px;">
+                      Acessar o app →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:0 0 8px;color:#8a7a9a;font-size:13px;line-height:1.6;">
+                Depois de criar sua senha, basta entrar com e-mail e senha sempre que quiser. Seu progresso fica salvo na nuvem automaticamente. 🎙️
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 32px;border-top:1px solid #2d1a4a;text-align:center;">
+              <p style="margin:0;color:#5a4a6a;font-size:12px;line-height:1.5;">
+                Se você não realizou esta compra, pode ignorar este e-mail.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+async function sendWelcomeEmail(toEmail: string, toName: string | null): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return; // sem chave configurada, ignora silenciosamente
+
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: `${FROM_NAME} <${FROM_EMAIL}>`,
+        to: toEmail,
+        subject: "Seu acesso ao app Comunicação Magnética está liberado ✨",
+        html: buildWelcomeEmail(toName, toEmail),
+      }),
+    });
+  } catch {
+    // erro de rede — não propaga para não derrubar o webhook
+  }
+}
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -182,6 +292,11 @@ export async function POST(request: Request) {
 
   if (error) {
     return NextResponse.json({ error: "Falha ao gravar." }, { status: 500 });
+  }
+
+  // Envia e-mail de boas-vindas apenas em compras aprovadas.
+  if (status === "active") {
+    await sendWelcomeEmail(email.toLowerCase(), name);
   }
 
   return NextResponse.json({ ok: true, email: email.toLowerCase(), status }, { status: 200 });
